@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Todo.Server
 
 main :: IO ()
 main = startApp

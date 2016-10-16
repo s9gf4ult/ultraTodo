@@ -1,5 +1,6 @@
 packages:
   - '.'
+  - '../todoApi/'
 
 extra-deps:
 - servant-0.8

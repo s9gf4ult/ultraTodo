@@ -24,7 +24,6 @@ library
                     , TypeFamilies
   exposed-modules:     React.Plugins.ReactSelect
                      , Todo.Store
-                     , Todo.Utils
                      , Todo.View
   build-depends:       aeson
                      , base >= 4.7 && < 5
@@ -36,6 +35,7 @@ library
                      , react-flux
                      , react-flux-servant
                      , text
+                     , todoApi
   default-language:    Haskell2010
 
 executable todoClient

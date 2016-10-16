@@ -1,0 +1,13 @@
+resolver: lts-5.14
+
+packages:
+- '.'
+
+extra-deps:
+- servant-0.8
+- servant-server-0.8
+
+
+flags: {}
+
+extra-package-dbs: []
