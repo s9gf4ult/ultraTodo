@@ -1,51 +1,25 @@
 module Todo.View where
 
 import Control.Lens
-import Data.Aeson
-import Data.Aeson.TH
+import Data.Default
 import Data.Text as T
-import GHC.Generics (Generic)
-import GHCJS.Marshal
-import GHCJS.Types
 import React.Flux
+import React.Plugins.ReactSelect
 import Todo.Store
-import Todo.Utils
 
-data SelectOption = SelectOption
-  { seValue :: Text
-  , seLabel :: Text
-  } deriving (Show)
 
-deriveJSON
-  defaultOptions
-  { fieldLabelModifier = defaultFieldLabelModifier }
-  ''SelectOption
-
-instance FromJSVal SelectOption where
-  fromJSVal jsval = do
-    Just value <- fromJSVal jsval
-    return $ case fromJSON value of
-      Error e -> Nothing
-      Success a -> Just a
-
-selectOptions :: [SelectOption]
+selectOptions :: [SelectOption Text]
 selectOptions =
-  [ SelectOption "one" "One"
-  , SelectOption "two" "Two"
+  [ SelectOption "one" "One" Nothing
+  , SelectOption "two" "Two" Nothing
   ]
-
 
 todoClient :: ReactView ()
 todoClient = defineControllerView "todoClient" todoStore draw
   where
     draw state () = do
       div_ $ do
-        foreign_ "Select"
-          [ "options" @= selectOptions
-          , "matchPos" @= ("start" :: Text)
-          , "ignoreCase" @= False
-          , "value" @= (state ^. tsEntry)
-          , callback "onChange" (\val ->
-                                  dispatchTodoClient $ UpdateEntry $ seValue val)
-          ]
-          mempty
+        reactSelect_ $ def
+          { _spValue    = state ^. tsEntry . re _Just
+          , _spOptions  = selectOptions
+          , _spOnChange = Just $ \opt -> dispatchTodoClient $ UpdateEntry $ opt ^. seValue }
