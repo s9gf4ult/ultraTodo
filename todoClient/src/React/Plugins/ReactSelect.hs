@@ -32,12 +32,15 @@ instance (FromJSON a) => FromJSVal (SelectOption a) where
       Error _ -> Nothing
       Success a -> Just a
 
+-- | React-select pass null when value is cleared
+type OnChangeHandler handler a = Maybe (SelectOption a) -> handler
+
 data SelectParameters handler a = SelectParameters
   { _spName     :: Maybe Text
     -- ^ Name for hidden element
   , _spValue    :: Maybe a
   , _spOptions  :: [SelectOption a]
-  , _spOnChange :: Maybe (SelectOption a -> handler)
+  , _spOnChange :: Maybe (OnChangeHandler handler a)
     -- ^ Callback will to call on change
   }
 

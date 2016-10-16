@@ -13,7 +13,7 @@ data TodoState = TodoState
 makeLenses ''TodoState
 
 data TodoAction =
-  UpdateEntry Text
+  UpdateEntry (Maybe Text)
   deriving (Generic, Show)
 
 instance NFData TodoAction
@@ -26,7 +26,7 @@ instance StoreData TodoState where
     mutate <- case action of
         UpdateEntry t -> do
           print action
-          return $ set tsEntry t
+          return $ maybe id (set tsEntry) t
     return $ mutate state
 
 todoStore :: ReactStore TodoState

@@ -22,4 +22,4 @@ todoClient = defineControllerView "todoClient" todoStore draw
         reactSelect_ $ def
           { _spValue    = state ^. tsEntry . re _Just
           , _spOptions  = selectOptions
-          , _spOnChange = Just $ \opt -> dispatchTodoClient $ UpdateEntry $ opt ^. seValue }
+          , _spOnChange = Just $ \opt -> dispatchTodoClient $ UpdateEntry $ opt ^? _Just . seValue }
