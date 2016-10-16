@@ -20,7 +20,7 @@ type TodoListAPI
   = "api"
   :> "todo"
   :> "list"
-  :> Post '[JSON] [APITodo]
+  :> Get '[JSON] [APITodo]
 
 todoApi :: Proxy TodoAPI
 todoApi = Proxy
