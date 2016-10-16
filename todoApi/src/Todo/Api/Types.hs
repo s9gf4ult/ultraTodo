@@ -1,6 +1,5 @@
 module Todo.Api.Types where
 
-import Data.Aeson
 import Data.Aeson.TH
 import Data.List as L
 import Data.Text as T
