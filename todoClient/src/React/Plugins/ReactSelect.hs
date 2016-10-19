@@ -15,7 +15,6 @@ import Todo.Utils
 data SelectOption a = SelectOption
   { _seValue          :: !a
   , _seLabel          :: !Text
-  , _seClearableValue :: !(Maybe Bool)
   } deriving (Show)
 
 makeLenses ''SelectOption
@@ -32,13 +31,29 @@ instance (FromJSON a) => FromJSVal (SelectOption a) where
       Error _ -> Nothing
       Success a -> Just a
 
+data SelectMatchPos
+  = SMStart
+  | SMAny
+
+makePrisms ''SelectMatchPos
+
+data SelectMatchProp
+  = SPLabel
+  | SPValue
+  | SPAny
+
+makePrisms ''SelectMatchProp
+
 data SelectParameters handler a = SelectParameters
-  { _spName     :: Maybe Text
+  { _spName       :: Maybe Text
     -- ^ Name for hidden element
-  , _spValue    :: Maybe a
-  , _spOptions  :: [SelectOption a]
-  , _spOnChange :: Maybe (SelectOption a -> handler)
+  , _spValue      :: Maybe a
+  , _spOptions    :: [SelectOption a]
+  , _spOnChange   :: Maybe (SelectOption a -> handler)
     -- ^ Callback will to call on change
+  , _spMatchPos   :: Maybe SelectMatchPos
+  , _spMatchProp  :: Maybe SelectMatchProp
+  , _spIgnoreCase :: Maybe Bool
   }
 
 makeLenses ''SelectParameters
@@ -49,6 +64,7 @@ instance Default (SelectParameters handler a) where
     , _spValue = Nothing
     , _spOptions = []
     , _spOnChange = Nothing
+    , _spMatchPos = Nothing
     }
 
 reactSelect_
@@ -64,4 +80,5 @@ reactSelect_ selectParams = foreign_ "Select" opts mempty
       , ("value" @=) <$> (selectParams ^. spValue)
       , Just $ "options" @= (selectParams ^. spOptions)
       , callback "onChange" <$> (selectParams ^. spOnChange)
+      ,
       ]
