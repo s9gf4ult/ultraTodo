@@ -4,10 +4,12 @@ import Control.Lens
 import Data.Aeson
 import Data.Aeson.TH
 import Data.Default
+import Data.List as L
 import Data.Maybe
 import Data.Text as T
 import GHCJS.Marshal
 import React.Flux
+import Text.Inflections
 import Todo.Utils
 
 -- | First parameter must have 'ToJSON' and 'FromJSON' instances and must render
@@ -37,6 +39,11 @@ data SelectMatchPos
 
 makePrisms ''SelectMatchPos
 
+deriveJSON
+  defaultOptions
+  { constructorTagModifier = toUnderscore . L.drop 2 }
+  ''SelectMatchPos
+
 data SelectMatchProp
   = SPLabel
   | SPValue
@@ -44,12 +51,20 @@ data SelectMatchProp
 
 makePrisms ''SelectMatchProp
 
+deriveJSON
+  defaultOptions
+  { constructorTagModifier = toUnderscore . L.drop 2 }
+  ''SelectMatchProp
+
+-- | React-select pass null when value is cleared
+type OnChangeHandler handler a = Maybe (SelectOption a) -> handler
+
 data SelectParameters handler a = SelectParameters
   { _spName       :: Maybe Text
     -- ^ Name for hidden element
   , _spValue      :: Maybe a
   , _spOptions    :: [SelectOption a]
-  , _spOnChange   :: Maybe (SelectOption a -> handler)
+  , _spOnChange   :: Maybe (OnChangeHandler handler a)
     -- ^ Callback will to call on change
   , _spMatchPos   :: Maybe SelectMatchPos
   , _spMatchProp  :: Maybe SelectMatchProp
@@ -60,11 +75,13 @@ makeLenses ''SelectParameters
 
 instance Default (SelectParameters handler a) where
   def = SelectParameters
-    { _spName = Nothing
-    , _spValue = Nothing
-    , _spOptions = []
-    , _spOnChange = Nothing
-    , _spMatchPos = Nothing
+    { _spName       = Nothing
+    , _spValue      = Nothing
+    , _spOptions    = []
+    , _spOnChange   = Nothing
+    , _spMatchPos   = Nothing
+    , _spMatchProp  = Nothing
+    , _spIgnoreCase = Nothing
     }
 
 reactSelect_
@@ -80,5 +97,7 @@ reactSelect_ selectParams = foreign_ "Select" opts mempty
       , ("value" @=) <$> (selectParams ^. spValue)
       , Just $ "options" @= (selectParams ^. spOptions)
       , callback "onChange" <$> (selectParams ^. spOnChange)
-      ,
+      , ("matchPos" @=) <$> (selectParams ^. spMatchPos)
+      , ("matchProp" @=) <$> (selectParams ^. spMatchProp)
+      , ("ignoreCase" @=) <$> (selectParams ^. spIgnoreCase)
       ]

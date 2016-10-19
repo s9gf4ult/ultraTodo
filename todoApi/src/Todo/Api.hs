@@ -3,8 +3,6 @@ module Todo.Api
   , module Todo.Api
   ) where
 
-import Data.Aeson
-import Data.Aeson.TH
 import Data.Proxy
 import Servant.API
 import Todo.Api.Types
@@ -22,7 +20,7 @@ type TodoListAPI
   = "api"
   :> "todo"
   :> "list"
-  :> Post '[JSON] [APITodo]
+  :> Get '[JSON] [APITodo]
 
 todoApi :: Proxy TodoAPI
 todoApi = Proxy

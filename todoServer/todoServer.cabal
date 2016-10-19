@@ -15,19 +15,24 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  default-extensions: TypeFamilies
+  ghc-options:    -Wall
+  default-extensions: FlexibleContexts
+                    , OverloadedStrings
+                    , TypeFamilies
                     , TypeOperators
   exposed-modules:     Todo.Server
+                     , Todo.Server.Impl
   build-depends:       aeson
                      , base >= 4.7 && < 5
                      , servant
                      , servant-server
                      , todoApi
+                     , transformers-base
                      , wai
                      , warp
   default-language:    Haskell2010
 
-executable todoServer-exe
+executable todoServer
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
@@ -35,7 +40,7 @@ executable todoServer-exe
                      , todoServer
   default-language:    Haskell2010
 
-test-suite todoServer-test
+test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
